@@ -8,11 +8,11 @@
 
 Wage data:
 
-![image-20210916142009854](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916142009854.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916142009854.png)
 
 Stock market data: 
 
-![image-20210916142037824](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916142037824.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916142037824.png)
 
 
 
@@ -47,7 +47,7 @@ We do not really care how well the method works on the training data. Rather, we
 
 So basically we need to minimize the test MSE
 
-![image-20210916100449478](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916100449478.png)
+![Ave](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916100449478.png)
 
 Average squared prediction error
 
@@ -55,7 +55,7 @@ Average squared prediction error
 
 **Ex:**
 
-![image-20210916120843443](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916120843443.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916120843443.png)
 
 ** Degrees of freedom** (Ch 7)
 
@@ -70,7 +70,7 @@ cross-validation is a method to estimate test MSE using the training data.
 
 the expected test MSE, for a given value x0, can always be decomposed into the sum of three fundamental quantities: the variance of estimated f(x0), the squared bias of estimated f(x0) and the variance of the error terms:  <u>**(???????? I do not quite understand how we get this equation)**</u>
 
-![image-20210916132106404](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916132106404.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916132106404.png)
 
 The job is to minimize the variance and bias.
 
@@ -83,7 +83,7 @@ Bias and variance trade off.
 
 **Good example of Bias-Variance Trade-off:**
 
-![image-20210916142346888](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916142346888.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916142346888.png)
 
 In real-life it is hard to compute test MSE because we do not have *f*
 
@@ -91,9 +91,9 @@ In real-life it is hard to compute test MSE because we do not have *f*
 
 K-nearest Neighbors: 
 
-![image-20210916143049647](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916143049647.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916143049647.png)
 
-![image-20210916143105519](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916143105519.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916143105519.png)
 
 
 
