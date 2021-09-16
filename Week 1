@@ -39,7 +39,7 @@ Stock market data:
 
 Mean Squared Error:
 
-![image-20210916005614362](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916005614362.png)      (**training MSE**)
+![MSE](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916005614362.png)      (**training MSE**)
 
 MSE is the most commonly used measure to check the quality of the fit.
 
