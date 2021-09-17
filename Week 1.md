@@ -111,7 +111,7 @@ K-nearest Neighbors:
 
 I have also learned how to use github to upload markdown file for notes.
 
-![image-20210916194858787](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916194858787.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20210916194858787.png)
 
 
 
