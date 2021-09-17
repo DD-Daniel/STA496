@@ -109,17 +109,40 @@ K-nearest Neighbors:
 
 
 
-R questions: R 
+I have also learned how to use github to upload markdown file for notes.
+
+![image-20210916194858787](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20210916194858787.png)
 
 
 
+R questions: R Studio
 
 
 
+### Paper I have read: 
+
+Mosheva, M, Hertz-Palmor, N, Dorman Ilan, S, et al. **Anxiety, pandemic-related stress and resilience among physicians during the COVID-19 pandemic. Depression and Anxiety.** 2020; 37: 965– 971. https://doi.org/10.1002/da.23085
+
+This paper analyzes factors associated with anxiety related to the COVID-19 outbreak among physicians.
+
+They used a cross-sectional survey of a nonprobability sample of physician in Israel. The analytic sample for the current study included respondents who consented to participate in the survey between March 19 to March 22, 2020. 
+
+**Method**: They used descriptive statistics to present the sociodemographic characteristics, anxiety, resilience, and PRSF. They conducted multivariable linear regression with the PROMIS Anxiety score as a dependent variable to evaluate the crude association between anxiety, PRSF, and resilience and assessed its robustness when adjusted for age and sex. 
+
+Results can be found in the paper's table.
+
+In the paper, they found that since the pandemic outbreak, healthcare workers are under a lot of pressure, their mental health faces challenges. Physicians reporting high levels of anxiety are in line with a recently published report on mental health outcomes among healthcare workers exposed to the COVID-19 pandemic in China. 
 
 
 
+Another paper I have read is about **Vaccinations or Non-Pharmaceutical Interventions:**
+**Safe Reopening of Schools in England.**
 
+In that paper, they used scenario-based approach to modelling potential interventions to assess relative changes rather than real-world forecasts. They assess the effects of vaccinating those aged 16-17, those aged 12-17, and not vaccinating children at all relative to only vaccinating the adult population. Vaccinating children in the 12-15 age group would have had a significant impact on the course of the epidemic, saving thousands of lives overall in these simulations. In the absence of such a vaccination campaign the simulations show there could still be a significant positive impact on the epidemic (fewer cases, fewer deaths) by continuing NPI strategies in schools . The analysis from the paper suggests that the best approach are likely derived from a combination of vaccinations and NPIs.
+
+However, I think even there is no pandemic going on, the school should still implement NPIs. I think it can still help to improve the overall wellness of the students together with vacciantions. 
+
+NPIs : non-pharmaceutical interventions
 
 
 
