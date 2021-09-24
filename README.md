@@ -1,6 +1,6 @@
 # STA496
-Reading courses notes weekly
-Plan for the course: <Introduction to Statistical Learning with R example>
+# Reading courses notes weekly
+# Plan for the course: "Introduction to Statistical Learning with R example"
 ## Week 1: Chapter 1-2
 ## Week 2: Chapter 3-5
 ## Week 3: Chapter 6-9
