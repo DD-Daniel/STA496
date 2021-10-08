@@ -12,3 +12,8 @@
 **How does stress affect life satisfaction during the COVID-19 pandemic? Moderated mediation analysis of sense of coherence and fear of coronavirus**(https://www-tandfonline-com.myaccess.library.utoronto.ca/doi/full/10.1080/13548506.2021.1906436)
 **Does wearing personal protective equipment affect the performance and decision of physicians? A cross-sectional study during the COVID-19 pandemic**(https://www-ncbi-nlm-nih-gov.myaccess.library.utoronto.ca/pmc/articles/PMC8189734/)
 **Does stock market development and COVID-19 pandemic lead to financial crisis: the case of largest Islamic stock exchange market?**(Does stock market development and COVID-19 pandemic lead to financial crisis: the case of largest Islamic stock exchange market?)
+
+
+# Article Chosen to be replicated
+**"Age differences in COVID-19 risk-taking, and the relationship with risk attitude and numerical ability"**
+https://royalsocietypublishing.org/doi/10.1098/rsos.201445#d1e589
