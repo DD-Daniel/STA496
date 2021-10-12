@@ -6,33 +6,33 @@ In the chapters that follow, we consider some approaches for extending the linea
 
 ### Subset selection:
 
-![image-20211011212132050](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212132050.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011212132050.png)
 
 
 
-![image-20211011212237366](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212237366.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011212237366.png)
 
 ### Stepwise Selection：
 
-![image-20211011212405029](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212405029.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011212405029.png)
 
 
 
-![image-20211011212436748](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212436748.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011212436748.png)
 
-![image-20211011212515300](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212515300.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011212515300.png)
 
 ## Chapter 7:  Moving beyond linearity
 
 **Polynomial regression**:
 
-![image-20211011212809621](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212809621.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011212809621.png)
 
 **Step function**:
 
-![](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011212809621.png
 
-![image-20211011220245677](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011220245677.png)
+
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011220245677.png)
 
 ### Regression Splines
 
@@ -42,7 +42,7 @@ Regression splines are more flexible than polynomials and step functions, and in
 
 Instead of fitting a high-degree polynomial over the entire range of X, piecewise polynomial regression involves fitting separate low-degree polynomial over different regions of X. For example, a piecewise cubic polynomial works by fitting a cubic regression model of the form 
 
-![image-20211011230624554](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011230624554.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011230624554.png)
 
 where the coefficients β0, β1, β2, and β3 differ in different parts of the range of X.  Knots: The points where the coefficients change are called knots.
 
@@ -50,11 +50,11 @@ where the coefficients β0, β1, β2, and β3 differ in different parts of the r
 
 A cubic spline with K knots can be modeled as the following for an appropriate choice of basis functions b1, b2, . . . , bK+3.
 
-![image-20211011230853105](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011230853105.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011230853105.png)
 
 truncated power basis: 
 
-![image-20211011230811066](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011230811066.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011230811066.png)
 
 where ξ is the knot. In other words, in order to fit a cubic spline to a data set with K knots, we perform least squares regression with an intercept and 3 + K predictors, of the form X, X2, X3, h(X, ξ1), h(X, ξ2),...,h(X, ξK), where ξ1,..., ξK are the knots. This amounts to estimating a total of K + 4 regression coefficients; for this reason, fitting a cubic spline with K knots uses K+4 degrees of freedom.
 
@@ -76,4 +76,5 @@ I could not quite understand the hyperplane part.
 
 Example of hyperplane:
 
-![image-20211011231354698](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211011231354698.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211011231354698.png)
+
