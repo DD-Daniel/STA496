@@ -30,7 +30,7 @@ Open access article with data and code available.
 
 Data sets example:
 
-![image-20211020115748046](C:\Users\dell\AppData\Roaming\Typora\typora-user-images\image-20211020115748046.png)
+![](https://github.com/DD-Daniel/STA496/blob/main/images/image-20211020115748046.png)
 
 ## Summary of the article:
 
