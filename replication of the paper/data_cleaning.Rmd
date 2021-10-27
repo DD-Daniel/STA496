@@ -1,0 +1,414 @@
+
+---
+title: "Data cleaning"
+author: "Replication By Daniel Dong"
+date: "24/10/2021"
+output: html_document
+---
+
+# Data import and cleaning
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+chooseCRANmirror(graphics=FALSE, ind=1)
+knitr::opts_chunk$set(echo = TRUE)
+
+install.packages("tidyverse")
+library(tidyverse)
+install.packages("pastecs")
+library(pastecs)
+install.packages("ltm")
+library(ltm)
+install.packages("psych")
+library(psych)
+install.packages("multilevel")
+library(multilevel)
+
+source("functions.R")
+
+```
+
+
+## Loading data and combining datasets younger and older adults 
+
+```{r, include=FALSE}
+
+coltypes <- rep(0, 80)
+coltypes[c(1,3,4,5,6,7,8, 9)] <- "c"
+coltypes[!coltypes == "c"] <- "n"
+coltypes <- paste0(coltypes, collapse = "")
+
+oldadult <- read_csv(
+  "olderadults.csv")
+
+youngadult <- read_csv(
+  "youngeradults.csv",
+  col_names = TRUE,
+  col_types = coltypes,
+)
+
+
+
+d <- rbind(youngadult, oldadult) # merging the datasets for older and younger adults
+
+
+d$ID <- 1:nrow(d) # giving participant rows ID numbers
+
+```
+
+
+## Data exclusion 
+
+In the chunk below, we removed participants whose data did not pass the set requirements. We removed participants for:
+
+- Progress less than 100% (the entry with 75% missed more than one entire measure). This removed 8 people. 
+
+- Reporting to have an official diagnosis of cognitive impairment. This removed 3 people. 
+
+- Having a confirmed COVID diagnosis. This removed 6 people. 
+
+- Failing the attention check in the survey. This removed 1 person.
+
+- Having an age that did not fall into the set age ranges (18 to 35, or 65+). This removed 2 persons.
+
+
+All checks combined removed 20 participants. 
+
+```{r echo=TRUE}
+
+# check to see who would be excluded and why
+check<- data.frame(d)
+
+check <- check[!check$progress == 100 | !check$cognitiveimpairment == 5 | check$covid_diagnosis == 1 | !check$attention_check == 4 | check$objectiverisk_age < 18 | (d$objectiverisk_age > 35 & d$objectiverisk_age < 65),] 
+
+# exclude based on set criteria
+
+d <- d[d$progress == 100,] 
+
+d <- d[d$cognitiveimpairment == 5,] 
+
+d <- d[!d$covid_diagnosis == 1,] 
+
+d <- d[d$attention_check == 4,] 
+                               
+d <- d[(d$objectiverisk_age >= 18 & d$objectiverisk_age <= 35) | d$objectiverisk_age >= 65,]
+
+
+
+       
+
+
+```
+
+
+## Creating age groups and sex at birth
+
+Age groups: To be able to compare groups, younger adults were given a value of 0 (ages 18 to 35), older adults were given a value of 1 (65+).
+
+Sex at birth: the survey asked participants about their gender. However, this may differ from sex at birth. To be able to confirm their gender was also their sex at birth, we compared the participants' reported gender with their "sex at birth" prior condition on Prolific. 
+Only two participants reported a different gender from their sex at birth, (i.e. reported male gender, were born female). 
+These two participants were identified beforehand by their Prolific ID. Their rows of data in the dataset had been noted through their Prolific ID, and their sex at birth was adjusted using the code below.
+
+
+```{r echo=TRUE}
+
+#creating age groups
+d$agegroup <- d$objectiverisk_age
+
+d$agegroup[d$agegroup >= 65] <- "older" # any age of 65 and older will be 1 (older adults)
+
+d$agegroup[d$agegroup < 65] <- "younger" # any age below 65 will be 0 (younger adults)
+
+
+# creating sex at birth 
+d$objectiverisk_sexatbirth <- d$objectiverisk_gender
+
+# two participants sex at birth differed to reported sex
+d$objectiverisk_sexatbirth[c(149,211)] <- 2
+
+# recoding the descriptive variables of education, income, employment and covid diagnosis.
+
+d$educationlevel <- ed_level_fac_convert(d$educationlevel)
+d$employmentstatus <- employ_level_fac_convert(d$employmentstatus)
+d$householdincome <- income_level_fac_convert(d$householdincome)
+d$covid_diagnosis <- covid_diagnosis_convert(d$covid_diagnosis)
+
+
+```
+
+
+# Descriptive information on the younger and older adult age groups.
+
+```{r, echo=FALSE}
+
+
+options(scipen=999)
+
+#younger adults
+clean_ya <- d[d$objectiverisk_age <= 35,]
+
+options(digits=2)
+stat.desc(clean_ya$objectiverisk_age)
+
+clean_ya$objectiverisk_gender <- as.factor(clean_ya$objectiverisk_gender)
+table(clean_ya$objectiverisk_gender)
+# female is coded as 2, male as 1.
+
+# older adults
+clean_oa <- d[d$objectiverisk_age >= 65,]
+
+as.factor(clean_ya$objectiverisk_gender)
+table(clean_oa$objectiverisk_gender)
+# female is coded as 2, male as 1.
+
+options(digits=1)
+stat.desc(clean_oa$objectiverisk_age)
+
+# education level 
+tapply(d$employmentstatus, d$agegroup, summary)
+
+tapply(d$householdincome, d$agegroup, summary)
+
+tapply(d$educationlevel, d$agegroup, summary)
+
+tapply(d$covid_diagnosis, d$agegroup, summary)
+
+options(digits=3)
+
+```
+
+## Recoding numeracy and creating overall score
+
+For numeracy, each correct answer is coded as 1 (correct), any other answer is coded as 0 (incorrect).
+Participants' final score is a sum of all correct answers.
+
+
+```{r Numeracy score, echo=TRUE}
+library(tidyverse)
+
+d <- d %>%
+      mutate(numeracy1 = ifelse(numeracy1 == "500",1,0),    
+             numeracy2 = ifelse(numeracy2 == "10",1,0),
+            numeracy3 = ifelse(numeracy3 == "0.1",1,0),
+            numeracy4 = ifelse(numeracy4 == "3",1,0),
+            numeracy5 = ifelse(numeracy5 == "2",1,0),
+            numeracy6 = ifelse(numeracy6 == "2",1,0),
+            numeracy7 = ifelse(numeracy7 == "2",1,0),
+            numeracy8 = ifelse(numeracy8 == "10",1,0),
+            numeracy9 = ifelse(numeracy9 == "100",1,0),
+            numeracy10 = ifelse(numeracy10 == "20",1,0),
+            numeracy11 = ifelse(numeracy11 == "5",1,0))
+
+cronbach <- data.frame(d$numeracy1, d$numeracy2, d$numeracy3, d$numeracy4, d$numeracy5, d$numeracy6, d$numeracy7, d$numeracy8, d$numeracy9, d$numeracy10, d$numeracy11)
+
+cronbach.alpha(cronbach, standardized = TRUE, CI = FALSE, 
+    probs = c(0.025, 0.975), B = 1000, na.rm = TRUE)
+
+item.total(cronbach)
+# item 3 seems to be the best indicator of numeracy, as it loads the highest. 
+
+
+d$numeracy_total <- d$numeracy1 + d$numeracy2 + d$numeracy3 + d$numeracy4 + d$numeracy5 + d$numeracy6 + d$numeracy7 + d$numeracy8 + d$numeracy9 + d$numeracy10 + d$numeracy11
+
+
+```
+
+## Calculating COVID risk-taking (dependent variable)
+
+Of the 10 items, two items on COVID risk-taking are reverse coded. 
+These items are returned to the general scale with the function below.
+For both the reverse coded and normally-coded items, the value 6 represents "Not applicable" and will be coded as such. 
+
+```{r COVID risk-taking, echo=TRUE}
+
+# recoding items that are reverse coded, and coding answer option "6" as NA. 
+d$risktaking_touchface_rc <- sapply(d$risktaking_touchface, reversecode)
+d$risktaking_meetingindoors_rc <- sapply(d$risktaking_meetingindoors, reversecode)
+
+d$risktaking_cleaning <- sapply(d$risktaking_cleaning, nacode)
+d$risktaking_crowdedspaces <- sapply(d$risktaking_crowdedspaces, nacode)
+d$risktaking_deliveries <- sapply(d$risktaking_deliveries, nacode)
+d$risktaking_facemaskshops <- sapply(d$risktaking_facemaskshops, nacode)
+d$risktaking_facemasktransport <- sapply(d$risktaking_facemasktransport, nacode)
+d$risktaking_handsanitizer <- sapply(d$risktaking_handsanitizer, nacode)
+d$risktaking_handwashing <- sapply(d$risktaking_handwashing, nacode)
+d$risktaking_meterdistance <- sapply(d$risktaking_meterdistance, nacode)
+
+# checking cronbachs alpha first
+risktaking <- data.frame(d$risktaking_handsanitizer, d$risktaking_touchface_rc, d$risktaking_crowdedspaces, d$risktaking_facemaskshops, d$risktaking_facemasktransport, d$risktaking_deliveries,
+                         d$risktaking_handwashing, d$risktaking_meetingindoors_rc, d$risktaking_meterdistance, d$risktaking_cleaning)
+
+cronbach.alpha(risktaking, standardized = TRUE, CI = FALSE, 
+    probs = c(0.025, 0.975), B = 1000, na.rm = TRUE)
+# alpha is 0.73.
+
+
+#### Creating mean for risk-taking 
+risk_taking <- data.frame(d$risktaking_cleaning, d$risktaking_crowdedspaces, d$risktaking_facemaskshops, d$risktaking_facemasktransport, d$risktaking_handsanitizer, d$risktaking_handwashing, d$risktaking_meterdistance, d$risktaking_meetingindoors_rc, d$risktaking_deliveries, d$risktaking_touchface_rc)
+
+risk_taking$mean <- apply(risk_taking, 1, mean, na.rm=T)
+
+d$risktaking_mean <- risk_taking$mean
+
+# creating risk-taking mean for government guidelines (enforced)
+
+risk_taking_enforced <- data.frame(d$risktaking_facemaskshops, d$risktaking_facemasktransport, d$risktaking_meterdistance, d$risktaking_meetingindoors_rc)
+
+risk_taking_enforced$mean <- apply(risk_taking_enforced, 1, mean, na.rm=T)
+
+d$risktaking_enforced <- risk_taking_enforced$mean
+
+# creating risk-taking mean for government recommendations (not enforced)
+
+risk_taking_recommendations <- data.frame(d$risktaking_cleaning, d$risktaking_crowdedspaces, d$risktaking_handsanitizer, d$risktaking_handwashing, d$risktaking_touchface_rc, d$risktaking_deliveries)
+
+risk_taking_recommendations$mean <- apply(risk_taking_recommendations, 1, mean, na.rm=T)
+
+d$risktaking_recommendations <- risk_taking_recommendations$mean
+
+
+
+
+
+```
+
+
+
+## Calculating BMI and objective risk
+
+To be able to calculate participants' objective risk, BMI is also required.
+Participants were able to provide their weight and height in both imperial and metric measurements. 
+Some participants provided their measurements twice (e.g. providing both stone and pounds separately). For those occasions, we've created an upper limit; if people reported more than 14 pounds, we replaced their response for stone with 0. 
+If this occured in height, we replaced their value for feet with 0 if they reported a value of more than 12 inches. 
+
+
+```{r BMI calculation, echo=TRUE}
+############################### Weight ########################################
+
+d$objectiverisk_weightstone[d$objectiverisk_weightpounds > 14] <- 0
+
+
+d$objectiverisk_weightkilo <- kg_convert(d)
+
+
+############################## Height ##########################
+
+d$objectiverisk_heightfeet[d$objectiverisk_heightinches > 12] <- 0
+
+d$objectiverisk_heightcm <- cm_convert(d)
+
+d$objectiverisk_heightcm[d$objectiverisk_heightcm<3] <- d$objectiverisk_heightcm[d$objectiverisk_heightcm<3] * 100
+
+
+# BMI
+
+d$bmi <- d$objectiverisk_weightkilo/(d$objectiverisk_heightcm/100)^2
+
+
+# Objective risk total score
+
+d$objectiverisk_totalscore <- objective_risk_scores(d)
+
+
+
+```
+
+## Calculating risk perception
+
+One item in the risk perception scale was reverse-coded, which has been resolved with a function below.
+Additionally, due to the items having 2 measurement scales, the item scores were converted to a scale between 0 and 1, where 1 indicates higher perceived risk of COVID.  
+
+``` {r, echo = TRUE}
+
+# rescale the reverse coded item in the measure
+
+d$rp_affectcountryrc <- sapply(d$rp_affectcountry, reversecode_rp)
+
+# Calculating Cronbachs alpha to see whether any items need removing.
+
+riskperception <- data.frame(d$rp_affectcountryrc, d$rp_affected, d$rp_affectedothers, d$rp_getsick, d$rp_seriousness, d$rp_worried)
+
+cronbach.alpha(riskperception, standardized = TRUE, CI = FALSE, 
+    probs = c(0.025, 0.975), B = 1000, na.rm = FALSE)
+# alpha for risk perception is 0.8, so it's fine at it is.
+
+# Normalizing items due to varying scales, before calculating mean
+
+d$rp_worried_norm <- min_max_norm(d$rp_worried, min = 1, max = 7)
+d$rp_affected_norm <- min_max_norm(d$rp_affected, min = 1, max = 7)
+d$rp_affectedothers_norm <- min_max_norm(d$rp_affectedothers, min = 1, max = 7)
+d$rp_affectcountryrc_norm <- min_max_norm(d$rp_affectcountryrc, min = 1, max = 5)
+d$rp_getsick_norm <- min_max_norm(d$rp_getsick, min = 1, max = 5)
+d$rp_seriousness_norm <- min_max_norm(d$rp_seriousness, min = 1, max =5)
+
+# creating a mean score of risk perception
+
+risk_perception <- data.frame(d$rp_worried_norm, d$rp_affected_norm, d$rp_affectedothers_norm, d$rp_getsick_norm,d$rp_seriousness_norm, d$rp_affectcountryrc_norm)
+risk_perception$mean <- apply(risk_perception, 1, mean, na.rm=T)
+d$rp_mean_norm <- risk_perception$mean
+
+
+# creating risk perception scores just for individual risk.
+
+rpnorm <- data.frame(d$rp_affected_norm, d$rp_getsick_norm)
+rpnorm$mean <- apply(rpnorm, 1, mean, na.rm=T)
+d$rp_individual_mean <- rpnorm$mean
+
+
+# creating risk perception scores for perception of others' risk.
+
+rp_other_mean <- data.frame(d$rp_affectedothers_norm, d$rp_affectcountryrc_norm)
+rp_other_mean$mean <- apply(rp_other_mean, 1, mean, na.rm=T)
+d$rp_other_mean <- rp_other_mean$mean
+
+
+```
+
+## Risk attitude (Dospert)
+
+As per the scoring sheet provided by the authors, the DOSPERT score is created by regressing Risk Perception and Benefit onto Likelihood.
+Below, a regression analysis is run for each item (combination) for each person, with their score being beta for risk perception (listed as b in the scoring manual)
+
+```{r echo=TRUE}
+
+# checking Cronbachs alpha for all 3 subscales
+# likelihood
+dos <- data.frame(d$doslikelihood_drinking, d$doslikelihood_helmet, d$doslikelihood_seatbelt, d$doslikelihood_sex, d$doslikelihood_sunscreen, d$doslikelihood_unsafearea)
+
+cronbach.alpha(dos, standardized = TRUE, CI = FALSE, 
+    probs = c(0.025, 0.975), B = 1000, na.rm = TRUE)
+
+# benefit
+dos <- data.frame(d$dosbenefit_drinking, d$dosbenefit_helmet, d$dosbenefit_seatbelt, d$dosbenefit_sex, d$dosbenefit_sunscreen, d$dosbenefit_unsafearea)
+
+cronbach.alpha(dos, standardized = TRUE, CI = FALSE, 
+    probs = c(0.025, 0.975), B = 1000, na.rm = TRUE)
+
+# perception
+dos <- data.frame(d$dosperception_drinking, d$dosperception_helmet, d$dosperception_seatbelt, d$dosperception_sex, d$dosperception_sunscreen, d$dosperception_unsafearea)
+
+cronbach.alpha(dos, standardized = TRUE, CI = FALSE, 
+    probs = c(0.025, 0.975), B = 1000, na.rm = TRUE)
+
+# creating dospert beta score
+options(digits=3)
+d$dospert_beta <- risk_attitudes_perception(d)
+
+
+```
+
+
+## Creating datafile for analsis with only relevant variables.
+
+```{r include=FALSE}
+
+
+myvars <- c("agegroup", "covid_numbers", "policies_UK","rp_mean_norm", "dospert_beta", "objectiverisk_totalscore", "numeracy_total", "numeracy3", "risktaking_mean","rp_individual_mean", "rp_other_mean", "risktaking_enforced", "risktaking_recommendations")
+coviddata <- d[myvars]
+
+write.csv(coviddata, "data_analysis.csv")
+
+# for any analyses and plots that require loose items.
+write.csv(d, "datastudy4.csv" )
+
+```
