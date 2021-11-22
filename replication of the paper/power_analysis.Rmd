@@ -1,0 +1,126 @@
+---
+title: "Untitled"
+author: "DD"
+date: "11/19/2021"
+output: html_document
+---
+```{r}
+library(faux)
+library(dplyr)
+library(haven)
+gen_data = function(n, r=0.1){
+  gfxa =-0.3
+  gfxb= 0.3
+  gfxx = -0.3
+  
+  afxy =0.3
+  bfxy =-0.3
+  xfxy =-0.3
+  gfxy =-0.3
+  
+  coefs = list(
+    g = gfxy,
+    a = afxy,
+    b = bfxy,
+    x = xfxy,
+    ab = 0,
+    sigma = 1
+)
+  
+ X =rnorm_multi(
+   n = n,
+   vars = 3,
+   mu =c(0,0,0),
+   sd =c(1,1,1),
+   r =r,
+   varnames =c("a","b","x"))
+g = rep(c("group o", "group y"), each = n/2)
+
+dd =tibble(
+  g =g,
+  a =X$a, b =X$b, x=X$x)%>%
+  mutate(
+    g =as_factor(g),
+    a =if_else(g =="group o", a +gfxa/2, a -gfxa),
+    b =if_else(g =="group o", b +gfxb/2, b -gfxb),
+    x =if_else(g =="group o", x +gfxx/2, x -gfxx),
+    y =rnorm(n, coefs$g *(g =="group o") +coefs$a *a +coefs$b *b +coefs$x *x,coefs$sigma))
+return(dd)
+
+}
+
+
+dd = gen_data(1000, 0) %>%glimpse()
+
+cor.test(dd$a, dd$b)
+```
+
+```{r}
+library(purrr)
+library(ggplot2)
+
+summary(lm(y ~g, data =dd))
+
+summary(lm(y ~a, data =dd))
+
+summary(lm(y ~b, data =dd))
+
+summary(lm(y ~x, data =dd))
+
+summary(lm(y ~g +a +b +x, data =dd))
+
+
+check_for_fx <-function(n, r=0.2, alpha =0.05) {
+  dd <- gen_data(n, r)
+  # check that H1 is true# i.e., the p-value < alpha
+  h1g <-summary(lm(y ~g, data =dd))$coefficients[2,4] <alpha
+  b1_g <-summary(lm(y ~g, data =dd))$coefficients[2,1]
+  h1a <-summary(lm(y ~a, data =dd))$coefficients[2,4] <alpha
+  h1b <-summary(lm(y ~b, data =dd))$coefficients[2,4] <alpha
+  h1x <-summary(lm(y ~x, data =dd))$coefficients[2,4] <alpha
+  # Now check the H2, checking that the new variable is sig and the effect of g has decreased
+  m3 <-summary(lm(y ~g +a +b +x, data =dd))$coefficients
+  h3a <-m3[3, 4] <alpha
+  h3b <-m3[4, 4] <alpha
+  h3x <-m3[5, 4] <alpha
+  h3g <-m3[2, 1] <b1_g
+  d_out <-tibble(
+    h =c("h1g", "h1a", "h1b", "h1x", "h3g", "h3a", "h3b", "h3x"),
+    n =n,
+    r =r,
+    p =c(h1g, h1a, h1b, h1x, h3g , h3a, h3b, h3x))
+d_out <-add_row(d_out, h ="all",n=n, r =r, p =mean(d_out$p)==1)
+return(d_out)
+}
+# Now let us do this lots of times for different values of n.
+iter <-500
+n_min <-10
+n_max <-250
+sims <-map_dfr(rep(seq(50, 500, 20), 500), check_for_fx, r =0.1)
+sims %>%
+  group_by(h, n, r) %>% 
+  summarise(power =mean(p)) %>% 
+  mutate(r =as.factor(r)) %>% 
+  ggplot(aes(x =n, y =power, colour =h, group =h)) +
+  geom_point() +
+  geom_smooth(se =FALSE) +
+  scale_y_continuous(breaks =c(0, 0.95, 1), limits =c(0, 1))
+
+
+## `geom_smooth()` using method = 'loess' and formula 'y ~ x'## Warning: Removed 138 rows containing missing values (geom_smooth)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
